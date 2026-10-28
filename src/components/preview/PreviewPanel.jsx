@@ -22,7 +22,7 @@ export default function PreviewPanel({ data }) {
           <InstagramPost profile={profile} post={ig} />
           <p className="pv-meta">
             캡션 {fmt(countChars(ig.text))} / {fmt(igRules.maxChars)}자 · 해시태그 {countHashtags(ig.text)} /{' '}
-            {igRules.maxHashtags}개 · 이미지 {ig.images.length} / {igRules.maxImages}장
+            {igRules.maxHashtags}개 · 미디어 {ig.images.length} / {igRules.maxImages}개
           </p>
         </div>
 

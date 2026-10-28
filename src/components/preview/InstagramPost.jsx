@@ -26,7 +26,7 @@ export default function InstagramPost({ profile, post }) {
         images={post.images}
         carousel={carousel}
         aspect={RULES.defaultAspect}
-        emptyLabel="인스타그램 이미지를 추가해주세요"
+        emptyLabel="인스타그램 이미지·동영상을 추가해주세요"
       />
 
       <div className="pv-ig-actions">
