@@ -1,0 +1,70 @@
+/* =========================================================
+   디자인 기준값 (색상·폰트·간격·그림자)
+   - 라이트가 기본, [data-theme="dark"]에서 다크로 전환
+   - --pv-* : 인스타/유튜브 카드 전용 색상 (실제 앱 색상 기준)
+   ========================================================= */
+:root {
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+
+  /* 앱 화면 */
+  --app-bg: #f3f4f8;
+  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(124, 92, 255, 0.10), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(255, 79, 139, 0.08), transparent 60%);
+  --surface: #ffffff;
+  --surface-2: #f7f8fb;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --border: #e4e6ee;
+  --text: #14161f;
+  --text-muted: #6b7083;
+  --accent: #7c5cff;
+  --accent-2: #ff4f8b;
+  --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #ff4f8b 100%);
+  --accent-soft: rgba(124, 92, 255, 0.10);
+  --ok: #12b76a;
+  --warn: #f79009;
+  --danger: #f04438;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 8px 24px -8px rgba(16, 24, 40, 0.14), 0 2px 6px rgba(16, 24, 40, 0.05);
+  --shadow-lg: 0 24px 48px -16px rgba(16, 24, 40, 0.22);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* 미리보기 카드 */
+  --pv-card: #ffffff;
+  --pv-text: #0f1419;
+  --pv-muted: #65676b;
+  --pv-line: #e4e6eb;
+  --pv-ig-link: #00376b;
+  --pv-yt-link: #065fd4;
+  --pv-dot: #c7c9ce;
+  --pv-dot-on: #0095f6;
+  --pv-empty: #f0f1f4;
+}
+
+:root[data-theme='dark'] {
+  --app-bg: #0b0c10;
+  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(255, 79, 139, 0.12), transparent 60%);
+  --surface: #15171d;
+  --surface-2: #1b1e25;
+  --surface-glass: rgba(21, 23, 29, 0.72);
+  --border: #2a2d36;
+  --text: #eceef3;
+  --text-muted: #9aa0ae;
+  --accent-soft: rgba(124, 92, 255, 0.18);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.7);
+
+  --pv-card: #000000;
+  --pv-text: #f5f5f5;
+  --pv-muted: #a8a8a8;
+  --pv-line: #262626;
+  --pv-ig-link: #e0f1ff;
+  --pv-yt-link: #3ea6ff;
+  --pv-dot: #4a4a4a;
+  --pv-empty: #121212;
+}
