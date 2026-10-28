@@ -31,22 +31,40 @@ const YT_COMMENT_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="cu
 const YT_SHARE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15 5.63 20.66 12 15 18.37V14h-1c-3.96 0-7.14 1-9.75 3.09 1.84-4.07 5.11-6.4 9.89-7.1l.86-.13V5.63M14 3v6C6.22 10.13 3.11 15.33 2 21c2.78-3.97 6.44-6 12-6v6l8-9-8-9Z"/></svg>`;
 const YT_MORE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>`;
 
+const VIDEO_PLAY_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.55.83l10.29-6.86a1 1 0 0 0 0-1.66L9.55 4.31A1 1 0 0 0 8 5.14Z"/></svg>`;
+const VIDEO_MUTE_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+const VIDEO_UNMUTE_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+
 /**
- * 이미지 URL을 Base64 DataURL로 변환 (상대 경로 / 외부 URL 대응)
+ * Blob 객체를 Base64 DataURL로 변환
  */
-async function toDataUrl(src) {
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Blob 변환 실패'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * 이미지/비디오 URL 또는 Blob을 Base64 DataURL로 변환 (상대 경로 / 외부 URL / Blob 대응)
+ */
+async function toDataUrl(src, blob = null) {
+  if (blob instanceof Blob) {
+    try {
+      return await blobToDataUrl(blob);
+    } catch (err) {
+      console.warn('Blob DataURL 변환 실패:', err);
+    }
+  }
   if (!src) return '';
   if (src.startsWith('data:')) return src;
 
   try {
     const res = await fetch(src);
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = () => resolve(src);
-      reader.readAsDataURL(blob);
-    });
+    const fetchedBlob = await res.blob();
+    return await blobToDataUrl(fetchedBlob);
   } catch (err) {
     console.warn('DataURL 변환 실패:', src, err);
     return src;
@@ -54,7 +72,29 @@ async function toDataUrl(src) {
 }
 
 /**
- * 단일 독립 실행형 HTML 문자열 비동기 생성 (모든 이미지 Base64 임베딩)
+ * 미디어 아이템 배열을 단일 HTML 내장용 객체 배열로 변환
+ */
+async function serializeMediaItems(items = []) {
+  return Promise.all(
+    items.map(async (item) => {
+      const dataUrl = await toDataUrl(item.src, item.blob);
+      const posterUrl =
+        item.type === 'video' && item.thumbnail
+          ? await toDataUrl(item.thumbnail)
+          : '';
+      return {
+        type: item.type === 'video' ? 'video' : 'image',
+        src: dataUrl,
+        poster: posterUrl,
+        width: item.width || 0,
+        height: item.height || 0,
+      };
+    })
+  );
+}
+
+/**
+ * 단일 독립 실행형 HTML 문자열 비동기 생성 (모든 이미지·동영상 Base64 임베딩)
  */
 export async function generateSingleHtml(data) {
   const { profile, ig, yt } = data;
@@ -66,10 +106,24 @@ export async function generateSingleHtml(data) {
   const igTagCount = countHashtags(ig.text);
   const ytCharCount = countChars(yt.text);
 
-  // 1. 모든 이미지를 완전한 Base64 DataURL로 변환 (오프라인 로컬 실행 100% 보장)
+  // 1. 모든 이미지 및 동영상을 완전한 Base64 DataURL로 변환 (오프라인 로컬 실행 100% 보장)
   const avatarDataUrl = await toDataUrl(profile.avatar);
-  const igImages = await Promise.all(ig.images.map((img) => toDataUrl(img.src)));
-  const ytImages = await Promise.all(yt.images.map((img) => toDataUrl(img.src)));
+  const igMedia = await serializeMediaItems(ig.images);
+  const ytMedia = await serializeMediaItems(
+    (yt.images || []).filter((item) => item.type !== 'video')
+  );
+
+  const igFirst = igMedia[0];
+  const igAspectStyle =
+    igFirst && igFirst.width && igFirst.height
+      ? `${igFirst.width} / ${igFirst.height}`
+      : '4 / 5';
+
+  const ytFirst = ytMedia[0];
+  const ytAspectStyle =
+    ytFirst && ytFirst.width && ytFirst.height
+      ? `${ytFirst.width} / ${ytFirst.height}`
+      : '1 / 1';
 
   // 프로필 아바타 HTML
   const initials = (name || '?').trim().slice(0, 2);
@@ -226,7 +280,22 @@ export async function generateSingleHtml(data) {
   /* 캐러셀 */
   .pv-carousel { position: relative; background: #000; overflow: hidden; touch-action: pan-y; }
   .pv-track { display: flex; height: 100%; transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
-  .pv-track img { width: 100%; height: 100%; flex-shrink: 0; object-fit: cover; display: block; user-select: none; }
+  .pv-slide, .pv-track > img { width: 100%; height: 100%; flex-shrink: 0; position: relative; }
+  .pv-slide img, .pv-slide video, .pv-track > img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; }
+  .pv-slide--video { cursor: pointer; }
+  .pv-video-play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 54px; height: 54px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    color: #fff; display: grid; place-items: center; pointer-events: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  }
+  .pv-video-mute-btn {
+    position: absolute; bottom: 12px; right: 12px;
+    width: 30px; height: 30px; border-radius: 50%; border: 0;
+    background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    color: #fff; display: grid; place-items: center; cursor: pointer; z-index: 2;
+  }
   .pv-carousel--empty { display: grid; place-items: center; background: var(--pv-empty); color: var(--pv-muted); font-size: 13px; }
 
   .pv-nav {
@@ -319,7 +388,7 @@ export async function generateSingleHtml(data) {
   <section class="pv-section">
     <h2 class="pv-label">
       <span class="pv-label__dot pv-label__dot--ig"></span>
-      INSTAGRAM · 피드 (${igImages.length}장)
+      INSTAGRAM · 피드 (${igMedia.length}개)
     </h2>
     <article class="pv-post pv-ig">
       <header class="pv-head">
@@ -328,7 +397,7 @@ export async function generateSingleHtml(data) {
         <span class="pv-more">${IG_MORE_SVG}</span>
       </header>
 
-      <div class="pv-carousel" id="ig-carousel" style="aspect-ratio: 4/5;">
+      <div class="pv-carousel" id="ig-carousel" style="aspect-ratio: ${igAspectStyle};">
         <div class="pv-track"></div>
         <span class="pv-count"></span>
         <button type="button" class="pv-nav pv-nav--prev">‹</button>
@@ -352,7 +421,7 @@ export async function generateSingleHtml(data) {
       <div class="pv-ig-time">방금 전</div>
     </article>
     <p class="pv-meta">
-      캡션 ${igCharCount.toLocaleString()} / 2,200자 · 해시태그 ${igTagCount} / 30개 · 이미지 ${igImages.length}장
+      캡션 ${igCharCount.toLocaleString()} / 2,200자 · 해시태그 ${igTagCount} / 30개 · 미디어 ${igMedia.length} / 20개
     </p>
   </section>
 
@@ -360,7 +429,7 @@ export async function generateSingleHtml(data) {
   <section class="pv-section">
     <h2 class="pv-label">
       <span class="pv-label__dot pv-label__dot--yt"></span>
-      YOUTUBE · 커뮤니티 게시물 (${ytImages.length}장)
+      YOUTUBE · 커뮤니티 게시물 (${ytMedia.length}장)
     </h2>
     <article class="pv-post pv-yt">
       <header class="pv-head">
@@ -371,7 +440,7 @@ export async function generateSingleHtml(data) {
 
       <p class="pv-yt-text" id="yt-text"></p>
 
-      <div class="pv-carousel" id="yt-carousel" style="aspect-ratio: 1/1;">
+      <div class="pv-carousel" id="yt-carousel" style="aspect-ratio: ${ytAspectStyle};">
         <div class="pv-track"></div>
         <span class="pv-count"></span>
         <button type="button" class="pv-nav pv-nav--prev">‹</button>
@@ -386,7 +455,7 @@ export async function generateSingleHtml(data) {
       </div>
     </article>
     <p class="pv-meta">
-      본문 ${ytCharCount.toLocaleString()} / 5,000자 · 이미지 ${ytImages.length}장
+      본문 ${ytCharCount.toLocaleString()} / 5,000자 · 이미지 ${ytMedia.length}장
     </p>
   </section>
 </main>
@@ -409,9 +478,13 @@ const DATA = {
   name: ${JSON.stringify(name)},
   igText: ${JSON.stringify(ig.text)},
   ytText: ${JSON.stringify(yt.text)},
-  igImages: ${JSON.stringify(igImages)},
-  ytImages: ${JSON.stringify(ytImages)}
+  igMedia: ${JSON.stringify(igMedia)},
+  ytMedia: ${JSON.stringify(ytMedia)}
 };
+
+const PLAY_SVG = ${JSON.stringify(VIDEO_PLAY_SVG)};
+const MUTE_SVG = ${JSON.stringify(VIDEO_MUTE_SVG)};
+const UNMUTE_SVG = ${JSON.stringify(VIDEO_UNMUTE_SVG)};
 
 /* 텍스트 포맷터: 링크와 해시태그 색칠 */
 function formatText(str, opts) {
@@ -426,8 +499,8 @@ function formatText(str, opts) {
   return s;
 }
 
-/* 1. 인스타그램 & 유튜브 캐러셀 초기화 */
-function initCarousel(id, dotsId, images) {
+/* 1. 인스타그램 & 유튜브 캐러셀 초기화 (이미지·비디오 혼합 지원) */
+function initCarousel(id, dotsId, items) {
   var el = document.getElementById(id);
   if (!el) return;
   var track = el.querySelector('.pv-track');
@@ -436,18 +509,81 @@ function initCarousel(id, dotsId, images) {
   var nextBtn = el.querySelector('.pv-nav--next');
   var dotsEl = dotsId ? document.getElementById(dotsId) : null;
 
-  if (!images || images.length === 0) {
-    el.innerHTML = '<div class="pv-carousel--empty" style="height:100%">등록된 이미지가 없습니다</div>';
+  if (!items || items.length === 0) {
+    el.innerHTML = '<div class="pv-carousel--empty" style="height:100%">등록된 미디어가 없습니다</div>';
     return;
   }
 
-  images.forEach(function(src, idx) {
-    var img = document.createElement('img');
-    img.src = src;
-    img.alt = (idx + 1) + '번째 이미지';
-    track.appendChild(img);
+  var isMuted = true;
+  var videoSlides = [];
 
-    if (dotsEl && images.length > 1) {
+  function syncMuteUI() {
+    videoSlides.forEach(function(vs) {
+      vs.video.muted = isMuted;
+      vs.muteBtn.innerHTML = isMuted ? MUTE_SVG : UNMUTE_SVG;
+      vs.muteBtn.setAttribute('title', isMuted ? '소리 켜기' : '음소거');
+    });
+  }
+
+  items.forEach(function(item, idx) {
+    var isObj = item && typeof item === 'object';
+    var type = isObj ? item.type : 'image';
+    var src = isObj ? item.src : item;
+    var poster = isObj ? item.poster : '';
+
+    var slide = document.createElement('div');
+    slide.className = 'pv-slide' + (type === 'video' ? ' pv-slide--video' : '');
+
+    if (type === 'video') {
+      var video = document.createElement('video');
+      video.src = src;
+      if (poster) video.poster = poster;
+      video.muted = isMuted;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.preload = 'metadata';
+
+      var playBtn = document.createElement('span');
+      playBtn.className = 'pv-video-play-btn';
+      playBtn.innerHTML = PLAY_SVG;
+
+      var muteBtn = document.createElement('button');
+      muteBtn.type = 'button';
+      muteBtn.className = 'pv-video-mute-btn';
+      muteBtn.innerHTML = MUTE_SVG;
+      muteBtn.onclick = function(e) {
+        e.stopPropagation();
+        isMuted = !isMuted;
+        syncMuteUI();
+      };
+
+      video.onplay = function() { playBtn.style.display = 'none'; };
+      video.onpause = function() { playBtn.style.display = 'grid'; };
+
+      slide.onclick = function() {
+        if (video.paused) {
+          video.play().catch(function() {});
+        } else {
+          video.pause();
+        }
+      };
+
+      slide.appendChild(video);
+      slide.appendChild(playBtn);
+      slide.appendChild(muteBtn);
+      videoSlides.push({ index: idx, video: video, playBtn: playBtn, muteBtn: muteBtn });
+    } else {
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = (idx + 1) + '번째 이미지';
+      img.draggable = false;
+      slide.appendChild(img);
+    }
+
+    track.appendChild(slide);
+
+    if (dotsEl && items.length > 1) {
       var dot = document.createElement('i');
       if (idx === 0) dot.className = 'on';
       dotsEl.appendChild(dot);
@@ -456,16 +592,29 @@ function initCarousel(id, dotsId, images) {
 
   var cur = 0;
   function update(n) {
-    cur = Math.max(0, Math.min(images.length - 1, n));
+    cur = Math.max(0, Math.min(items.length - 1, n));
     track.style.transform = 'translateX(-' + (cur * 100) + '%)';
-    if (countEl) countEl.textContent = (cur + 1) + '/' + images.length;
+    if (countEl) {
+      countEl.style.display = items.length > 1 ? 'block' : 'none';
+      countEl.textContent = (cur + 1) + '/' + items.length;
+    }
     if (prevBtn) prevBtn.style.display = cur === 0 ? 'none' : 'grid';
-    if (nextBtn) nextBtn.style.display = cur === images.length - 1 ? 'none' : 'grid';
+    if (nextBtn) nextBtn.style.display = cur === items.length - 1 ? 'none' : 'grid';
     if (dotsEl) {
       for (var i = 0; i < dotsEl.children.length; i++) {
         dotsEl.children[i].className = i === cur ? 'on' : '';
       }
     }
+
+    // 현재 슬라이드가 비디오면 자동 재생, 다른 비디오는 일시정지
+    videoSlides.forEach(function(vs) {
+      if (vs.index === cur) {
+        var p = vs.video.play();
+        if (p && p.catch) p.catch(function() {});
+      } else {
+        vs.video.pause();
+      }
+    });
   }
 
   if (prevBtn) prevBtn.onclick = function() { update(cur - 1); };
@@ -484,8 +633,8 @@ function initCarousel(id, dotsId, images) {
   update(0);
 }
 
-initCarousel('ig-carousel', 'ig-dots', DATA.igImages);
-initCarousel('yt-carousel', null, DATA.ytImages);
+initCarousel('ig-carousel', 'ig-dots', DATA.igMedia);
+initCarousel('yt-carousel', null, DATA.ytMedia);
 
 /* 2. 인스타 캡션 접기/펼치기 (첫 줄 + 더 보기) */
 (function() {

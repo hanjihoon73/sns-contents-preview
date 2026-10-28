@@ -19,16 +19,6 @@ export function isVideoFile(file) {
   return /\.(mp4|mov|m4v|webm)$/i.test(file.name || '');
 }
 
-/** File 객체를 Data URL로 변환 */
-function readFileAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target.result);
-    reader.onerror = () => reject(new Error(`동영상 파일을 읽지 못했습니다: ${file.name}`));
-    reader.readAsDataURL(file);
-  });
-}
-
 /**
  * 브라우저 인메모리 <video>와 <canvas>를 이용해
  * 비디오 가로/세로/재생시간 및 첫 프레임(0.1초) JPEG 썸네일을 추출합니다.
@@ -135,17 +125,18 @@ export function extractVideoMetadataAndThumbnail(file, maxThumbSize = 600) {
 
 /**
  * 비디오 File 객체 → 표준 미디어 아이템 객체
- * { id, src, type: 'video', name, width, height, duration, thumbnail, size }
+ * - 대용량 비디오를 Base64 문자열 대신 원본 Blob(File)과 ObjectURL로 관리하여
+ *   메모리 사용량을 최소화하고 IndexedDB에 바이너리(Blob)로 고속 저장합니다.
  */
 export async function readFileAsVideoData(file) {
-  const [src, meta] = await Promise.all([
-    readFileAsDataUrl(file),
-    extractVideoMetadataAndThumbnail(file),
-  ]);
+  const meta = await extractVideoMetadataAndThumbnail(file);
+  const blobObj = new Blob([file], { type: file.type || 'video/mp4' });
+  const src = URL.createObjectURL(blobObj);
 
   return {
     id: createId(),
     src,
+    blob: blobObj,
     type: 'video',
     name: file.name,
     width: meta.width,
