@@ -6,15 +6,18 @@ import PreviewPanel from './components/preview/PreviewPanel';
 import ConfirmDialog from './components/common/ConfirmDialog';
 import useTheme from './hooks/useTheme';
 import useEditorState from './hooks/useEditorState';
+import { exportToSingleHtml } from './utils/exportHtml';
 
 /**
  * SNS 콘텐츠 프리뷰 메인 앱
- * Phase 2: 프로필/문구/이미지 업로드 및 드래그 정렬, 실시간 미리보기 연동
+ * Phase 3: IndexedDB 자동 저장 및 SNS콘텐츠프리뷰_YYMMDD.html 단일 파일 내보내기 연동
  */
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const {
     data,
+    isInitialized,
+    initData,
     updateProfile,
     updateText,
     copyIgToYt,
@@ -27,22 +30,40 @@ export default function App() {
 
   const [mobileView, setMobileView] = useState('edit'); // 'edit' | 'preview'
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  // 최초 1회 샘플 데이터 로드 (빈 화면 대신 바로 볼 수 있도록)
+  // 최초 1회 저장된 데이터 복원 (IndexedDB -> 없으면 기본 샘플 로드)
   useEffect(() => {
-    loadSampleData().finally(() => setIsInitialized(true));
-  }, [loadSampleData]);
+    initData();
+  }, [initData]);
 
-  const handleResetConfirm = () => {
-    resetAll();
+  const handleResetConfirm = async () => {
+    await resetAll();
     setIsResetConfirmOpen(false);
+    showToast('모든 입력 내용이 초기화되었습니다.');
+  };
+
+  const handleExportHtml = async () => {
+    try {
+      showToast('HTML 파일을 생성하고 있어요…');
+      const fileName = await exportToSingleHtml(data);
+      showToast(`'${fileName}' 파일이 다운로드되었습니다!`);
+    } catch (err) {
+      alert('HTML 내보내기 중 오류가 발생했습니다: ' + err.message);
+    }
+  };
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage('');
+    }, 3000);
   };
 
   if (!isInitialized) {
     return (
       <div className="app-loading">
-        <p>미리보기 데이터를 준비하고 있어요…</p>
+        <p>이전 작업 데이터를 확인하고 있어요…</p>
       </div>
     );
   }
@@ -54,6 +75,7 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onLoadSample={loadSampleData}
         onReset={() => setIsResetConfirmOpen(true)}
+        onExportHtml={handleExportHtml}
       />
 
       <main className="app-main">
@@ -97,6 +119,13 @@ export default function App() {
         onConfirm={handleResetConfirm}
         onCancel={() => setIsResetConfirmOpen(false)}
       />
+
+      {/* 다운로드 및 완료 토스트 알림 */}
+      {toastMessage && (
+        <div className="toast-notification" role="status">
+          {toastMessage}
+        </div>
+      )}
     </>
   );
 }

@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNS콘텐츠프리뷰_261028 · 발행 미리보기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+  :root {
+    --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    --app-bg: #EEF0F3;
+    --pv-card: #FFFFFF;
+    --pv-text: #0F1419;
+    --pv-muted: #65676B;
+    --pv-line: #E4E6EB;
+    --pv-ig-link: #00376B;
+    --pv-yt-link: #065FD4;
+    --pv-dot: #C7C9CE;
+    --pv-dot-on: #0095F6;
+    --pv-empty: #F0F1F4;
+    --btn-border: #D0D5DD;
+    --btn-bg: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --app-bg: #0B0C0F;
+      --pv-card: #000000;
+      --pv-text: #F5F5F5;
+      --pv-muted: #A8A8A8;
+      --pv-line: #262626;
+      --pv-ig-link: #E0F1FF;
+      --pv-yt-link: #3EA6FF;
+      --pv-dot: #4A4A4A;
+      --pv-empty: #121212;
+      --btn-border: #344054;
+      --btn-bg: #16181C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --app-bg: #0B0C0F;
+    --pv-card: #000000;
+    --pv-text: #F5F5F5;
+    --pv-muted: #A8A8A8;
+    --pv-line: #262626;
+    --pv-ig-link: #E0F1FF;
+    --pv-yt-link: #3EA6FF;
+    --pv-dot: #4A4A4A;
+    --pv-empty: #121212;
+    --btn-border: #344054;
+    --btn-bg: #16181C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--app-bg);
+    color: var(--pv-text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  header.top {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header.top h1 { font-size: 20px; font-weight: 800; }
+  header.top p { margin-top: 4px; color: var(--pv-muted); font-size: 13.5px; }
+
+  .theme-btn {
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--pv-text);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 36px;
+    align-items: start;
+  }
+
+  .pv-section { display: flex; flex-direction: column; align-items: center; }
+  .pv-label {
+    width: 100%;
+    max-width: 470px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--pv-muted);
+  }
+  .pv-label__dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pv-label__dot--ig { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); }
+  .pv-label__dot--yt { background: #FF0033; }
+
+  .pv-post {
+    width: 100%;
+    max-width: 470px;
+    background: var(--pv-card);
+    color: var(--pv-text);
+    border: 1px solid var(--pv-line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,0.12);
+  }
+
+  .pv-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+  .pv-name { font-weight: 700; font-size: 14px; }
+  .pv-sub { font-weight: 400; font-size: 12px; color: var(--pv-muted); }
+  .pv-more { margin-left: auto; color: var(--pv-text); display: grid; place-items: center; }
+
+  .pv-avatar { border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; }
+  .pv-avatar--ring { padding: 2px; background: conic-gradient(from 210deg, #F58529, #DD2A7B, #8134AF, #515BD4, #F58529); }
+  .pv-avatar__inner {
+    width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+    display: grid; place-items: center; background: #F5B83D; color: #14110D;
+    font-weight: 800; font-size: 12px;
+  }
+  .pv-avatar__inner--has-img { background: var(--pv-card); }
+  .pv-avatar--ring .pv-avatar__inner { border: 2px solid var(--pv-card); }
+  .pv-avatar__inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* 캐러셀 */
+  .pv-carousel { position: relative; background: #000; overflow: hidden; touch-action: pan-y; }
+  .pv-track { display: flex; height: 100%; transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+  .pv-track img { width: 100%; height: 100%; flex-shrink: 0; object-fit: cover; display: block; user-select: none; }
+  .pv-carousel--empty { display: grid; place-items: center; background: var(--pv-empty); color: var(--pv-muted); font-size: 13px; }
+
+  .pv-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 50%; border: 0;
+    background: rgba(255,255,255,0.88); color: #111; font-size: 18px;
+    line-height: 1; cursor: pointer; display: grid; place-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .pv-nav--prev { left: 10px; }
+  .pv-nav--next { right: 10px; }
+  .pv-count {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.6); color: #fff; font-size: 12px;
+    padding: 3px 9px; border-radius: 999px;
+  }
+
+  /* 인스타 액션 바 */
+  .pv-ig-actions { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 8px 14px 0; }
+  .pv-ig-actions__left { display: flex; gap: 14px; }
+  .pv-ig-actions__right { justify-self: end; }
+  .pv-dots { display: flex; gap: 4px; }
+  .pv-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--pv-dot); }
+  .pv-dots i.on { background: var(--pv-dot-on); }
+  .pv-ig-likes { padding: 8px 14px 0; font-size: 14px; font-weight: 700; }
+  .pv-ig-caption {
+    margin: 0; padding: 6px 14px 4px; font-size: 14px; line-height: 1.5;
+    white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere;
+  }
+  .pv-ig-time { padding: 4px 14px 14px; font-size: 11px; color: var(--pv-muted); }
+
+  /* 유튜브 */
+  .pv-yt-text {
+    margin: 0; padding: 0 16px 12px; font-size: 14px; line-height: 1.55;
+    white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere;
+  }
+  .pv-yt .pv-carousel { margin: 0 16px; border-radius: 10px; }
+  .pv-yt-bar {
+    display: flex; align-items: center; gap: 20px; padding: 12px 16px 14px;
+    font-size: 13px; color: var(--pv-muted);
+  }
+  .pv-yt-bar span { display: flex; align-items: center; gap: 6px; }
+  .pv-yt-bar__share { margin-left: auto; }
+
+  .pv-tag { color: var(--pv-ig-link); }
+  .pv-yt-text a, .pv-yt-text .pv-tag { color: var(--pv-yt-link); text-decoration: none; }
+
+  .pv-toggle { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; color: var(--pv-muted); }
+  .pv-toggle--block { display: block; margin-top: 6px; font-weight: 700; color: var(--pv-text); }
+  .pv-toggle--inline.is-expanded { display: block; margin-top: 4px; }
+
+  .pv-meta { width: 100%; max-width: 470px; margin-top: 12px; padding: 0 4px; font-size: 12px; color: var(--pv-muted); }
+  footer { max-width: 1180px; margin: 32px auto 48px; text-align: center; color: var(--pv-muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>SNS콘텐츠프리뷰_261028 · 발행 미리보기</h1>
+    <p>계정: 깨봉수학 · 인스타그램 피드 & 유튜브 커뮤니티</p>
+  </div>
+  <button class="theme-btn" id="theme-btn">🌓 모드 전환</button>
+</header>
+
+<main>
+  <!-- 인스타그램 -->
+  <section class="pv-section">
+    <h2 class="pv-label">
+      <span class="pv-label__dot pv-label__dot--ig"></span>
+      INSTAGRAM · 피드 (5장)
+    </h2>
+    <article class="pv-post pv-ig">
+      <header class="pv-head">
+        <div class="pv-avatar pv-avatar--ring" style="width:36px;height:36px"><div class="pv-avatar__inner"><span>깨봉</span></div></div>
+        <div class="pv-name">깨봉수학</div>
+        <span class="pv-more">⋯</span>
+      </header>
+
+      <div class="pv-carousel" id="ig-carousel" style="aspect-ratio: 4/5;">
+        <div class="pv-track"></div>
+        <span class="pv-count"></span>
+        <button type="button" class="pv-nav pv-nav--prev">‹</button>
+        <button type="button" class="pv-nav pv-nav--next">›</button>
+      </div>
+
+      <div class="pv-ig-actions">
+        <div class="pv-ig-actions__left">
+          <span>♡</span>
+          <span>💬</span>
+          <span>➤</span>
+        </div>
+        <div class="pv-dots" id="ig-dots"></div>
+        <div class="pv-ig-actions__right">
+          <span>🔖</span>
+        </div>
+      </div>
+
+      <div class="pv-ig-likes">좋아요 0개</div>
+      <p class="pv-ig-caption" id="ig-caption"></p>
+      <div class="pv-ig-time">방금 전</div>
+    </article>
+    <p class="pv-meta">
+      캡션 594 / 2,200자 · 해시태그 10 / 30개 · 이미지 5장
+    </p>
+  </section>
+
+  <!-- 유튜브 -->
+  <section class="pv-section">
+    <h2 class="pv-label">
+      <span class="pv-label__dot pv-label__dot--yt"></span>
+      YOUTUBE · 커뮤니티 게시물 (6장)
+    </h2>
+    <article class="pv-post pv-yt">
+      <header class="pv-head">
+        <div class="pv-avatar" style="width:36px;height:36px"><div class="pv-avatar__inner"><span>깨봉</span></div></div>
+        <div class="pv-name">깨봉수학 <span class="pv-sub">· 방금 전</span></div>
+        <span class="pv-more">⋮</span>
+      </header>
+
+      <p class="pv-yt-text" id="yt-text"></p>
+
+      <div class="pv-carousel" id="yt-carousel" style="aspect-ratio: 1/1;">
+        <div class="pv-track"></div>
+        <span class="pv-count"></span>
+        <button type="button" class="pv-nav pv-nav--prev">‹</button>
+        <button type="button" class="pv-nav pv-nav--next">›</button>
+      </div>
+
+      <div class="pv-yt-bar">
+        <span>👍 0</span>
+        <span>👎 0</span>
+        <span>💬 0</span>
+        <span class="pv-yt-bar__share">↗</span>
+      </div>
+    </article>
+    <p class="pv-meta">
+      본문 581 / 5,000자 · 이미지 6장
+    </p>
+  </section>
+</main>
+
+<footer>※ 실제 앱 화면의 줄바꿈·'더 보기' 위치는 기기마다 조금 다를 수 있습니다.</footer>
+
+<script>
+/* 데이터 주입 */
+const DATA = {
+  name: "깨봉수학",
+  igText: "우리 아이 수학, 이대로 괜찮을까요?\n\nAI가 수능 수학에서 만점 받는 시대.\n언제까지 공식 외워서 답만 맞추는 연습을 시킬 건가요?\nㄴㅇ러니ㅏㅇ러만어러\n\n수능도 '고르는 시험'에서 '풀이를 쓰는 시험'으로 변화가 예고되고 있어요.\n\n내 아이의 미래를 위한 진짜수학은 무엇일까요?\n새로워진 깨봉 라이브 <AI 수학 프리즘>에서 그 비밀을 공개합니다.\n\n☑️ AI FOMO — '1인 1 자비스' 시대가 왔다?\n☑️ 에듀 나침반 — 수능이 서·논술형으로?\n☑️ 수학머리 열쇠 — 우리 아이 문제 해결력 수준은?\n☑️ 깨봉 언박싱 — AI 박사가 수학 교육을 시작한 사연?\n\n🎁 라이브 시청자만을 위한 혜택\n1. 방송 후기 참여 시\n  • 우수 후기: 상품권 3만원 증정\n  • 일반 후기: 커피 기프티콘 증정\n2. 선착순 100명 깨봉수학 타임세일 (10/30, 단 하루)\n\n📅 10월 30일(금) 오전 10시 30분\n📺 깨봉수학 유튜브 채널 LIVE\n\n🔔 프로필 링크에서 알림 신청하세요\n\n인공지능 세상을 살아갈 사람들의 수학, 깨봉\n\n#깨봉라이브 #AI수학프리즘 #AI시대교육 #수능서논술형 #문제해결력 #수학머리 #초등수학 #중등수학 #깨봉수학 #유튜브라이브",
+  ytText: "📺 새로워진 깨봉 라이브 — AI 수학 프리즘\n\n가짜수학으로 아이의 미래를 망치고 있지는 않나요?\n\nAI가 수능 수학에서 만점 받는 시대.\n우리 아이는 지금도 공식 암기와 기계적 문제 풀이만 하고 있습니다.\n\n새롭게 선보이는 깨봉 라이브, <AI 수학 프리즘>\nAI 시대를 관통하는 새로운 시선으로,\n우리 아이 수학 교육의 방향과 비법을 알려드립니다.\n\n📋 방송 코너 소개\n1. AI FOMO — '1인 1 자비스' 시대가 왔다?\n2. 에듀 나침반 — 수능이 서·논술형으로?\n3. 수학머리 열쇠 — 우리 아이 문제 해결력 수준은?\n4. 깨봉 언박싱 — AI 박사가 수학 교육을 시작한 사연?\n\n🎁 라이브 시청자만을 위한 혜택\n1. 방송 후기 참여 시\n  • 우수 후기: 상품권 3만원 증정\n  • 일반 후기: 커피 기프티콘 증정\n2. 선착순 100명 깨봉수학 타임세일 (10/30, 단 하루)\n\n📅 10월 30일(금) 오전 10시 30분\n📺 깨봉수학 유튜브 채널 LIVE\n\n🔔 예정된 라이브에서 '알림 설정'을 눌러두세요!\n→ https://youtube.com/live/CL1jMETzhQU\n\n인공지능 세상을 살아갈 사람들의 수학, 깨봉",
+  igImages: ["/samples/ig-1.png","/samples/ig-2.png","/samples/ig-3.png","/samples/ig-4.png","/samples/ig-5.png"],
+  ytImages: ["/samples/yt-1.png","/samples/yt-2.png","/samples/yt-3.png","/samples/yt-4.png","/samples/yt-5.png","/samples/yt-6.png"]
+};
+
+/* 텍스트 포맷터: 링크와 해시태그 색칠 */
+function formatText(str, opts = {}) {
+  let s = str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  if (opts.links) {
+    s = s.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1<\/a>');
+  }
+  if (opts.hashtags) {
+    s = s.replace(/(#[^\s#]+)/g, '<span class="pv-tag">$1<\/span>');
+  }
+  return s;
+}
+
+/* 1. 인스타그램 캐러셀 초기화 */
+function initCarousel(id, dotsId, images) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const track = el.querySelector('.pv-track');
+  const countEl = el.querySelector('.pv-count');
+  const prevBtn = el.querySelector('.pv-nav--prev');
+  const nextBtn = el.querySelector('.pv-nav--next');
+  const dotsEl = dotsId ? document.getElementById(dotsId) : null;
+
+  if (!images || images.length === 0) {
+    el.innerHTML = '<div class="pv-carousel--empty" style="height:100%">등록된 이미지가 없습니다</div>';
+    return;
+  }
+
+  images.forEach((src, idx) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = (idx + 1) + '번째 이미지';
+    track.appendChild(img);
+
+    if (dotsEl && images.length > 1) {
+      const dot = document.createElement('i');
+      if (idx === 0) dot.className = 'on';
+      dotsEl.appendChild(dot);
+    }
+  });
+
+  let cur = 0;
+  const update = (n) => {
+    cur = Math.max(0, Math.min(images.length - 1, n));
+    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+    if (countEl) countEl.textContent = (cur + 1) + '/' + images.length;
+    if (prevBtn) prevBtn.style.display = cur === 0 ? 'none' : 'grid';
+    if (nextBtn) nextBtn.style.display = cur === images.length - 1 ? 'none' : 'grid';
+    if (dotsEl) {
+      [...dotsEl.children].forEach((d, i) => d.className = i === cur ? 'on' : '');
+    }
+  };
+
+  if (prevBtn) prevBtn.onclick = () => update(cur - 1);
+  if (nextBtn) nextBtn.onclick = () => update(cur + 1);
+
+  // 터치 스와이프
+  let startX = null;
+  el.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener('touchend', (e) => {
+    if (startX === null) return;
+    const diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 40) update(cur + (diff < 0 ? 1 : -1));
+    startX = null;
+  });
+
+  update(0);
+}
+
+initCarousel('ig-carousel', 'ig-dots', DATA.igImages);
+initCarousel('yt-carousel', null, DATA.ytImages);
+
+/* 2. 인스타 캡션 접기/펼치기 (첫 줄 + 더 보기) */
+(function() {
+  const box = document.getElementById('ig-caption');
+  if (!box) return;
+  const full = DATA.igText;
+  if (!full) { box.innerHTML = '<span style="color:var(--pv-muted)">캡션 없음</span>'; return; }
+
+  const lines = full.split('\n');
+  const firstLine = lines[0];
+  const isMulti = lines.length > 1;
+
+  const renderCollapsed = () => {
+    box.innerHTML = '<b>' + escapeHtml(DATA.name) + ' </b>' + formatText(firstLine, { hashtags: true }) +
+      (isMulti ? '… <button type="button" class="pv-toggle pv-toggle--inline">더 보기</button>' : '');
+    const btn = box.querySelector('button');
+    if (btn) btn.onclick = renderExpanded;
+  };
+
+  const renderExpanded = () => {
+    box.innerHTML = '<b>' + escapeHtml(DATA.name) + ' </b>' + formatText(full, { hashtags: true }) +
+      '\n<button type="button" class="pv-toggle pv-toggle--inline is-expanded">접기</button>';
+    const btn = box.querySelector('button');
+    if (btn) btn.onclick = renderCollapsed;
+  };
+
+  renderCollapsed();
+})();
+
+/* 3. 유튜브 본문 접기/펼치기 (실제 앱처럼 제목 한 줄로 접혀 시작) */
+(function() {
+  const box = document.getElementById('yt-text');
+  if (!box) return;
+  const full = DATA.ytText;
+  if (!full) { box.innerHTML = '<span style="color:var(--pv-muted)">본문 없음</span>'; return; }
+
+  const lines = full.split('\n');
+  const titleLine = lines[0];
+  const isMulti = lines.length > 1;
+
+  const renderCollapsed = () => {
+    box.innerHTML = formatText(titleLine, { links: true, hashtags: true }) +
+      (isMulti ? '<button type="button" class="pv-toggle pv-toggle--block">자세히 보기</button>' : '');
+    const btn = box.querySelector('button');
+    if (btn) btn.onclick = renderExpanded;
+  };
+
+  const renderExpanded = () => {
+    box.innerHTML = formatText(full, { links: true, hashtags: true }) +
+      '<button type="button" class="pv-toggle pv-toggle--block">간략히</button>';
+    const btn = box.querySelector('button');
+    if (btn) btn.onclick = renderCollapsed;
+  };
+
+  renderCollapsed();
+})();
+
+/* 4. 다크/라이트 테마 전환 */
+(function() {
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-btn');
+  try {
+    const saved = localStorage.getItem('preview-theme');
+    if (saved) root.dataset.theme = saved;
+  } catch (e) {}
+
+  btn.onclick = () => {
+    const isDark = root.dataset.theme ? root.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('preview-theme', next); } catch (e) {}
+  };
+})();
+</script>
+</body>
+</html>

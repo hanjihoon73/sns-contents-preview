@@ -9,6 +9,7 @@ export default function Header({
   onToggleTheme,
   onLoadSample,
   onReset,
+  onExportHtml,
 }) {
   const isDark = theme === 'dark';
 
@@ -32,6 +33,14 @@ export default function Header({
 
           <Button onClick={onReset} title="입력된 모든 내용을 초기화합니다">
             🗑️ 초기화
+          </Button>
+
+          <Button
+            variant="primary"
+            onClick={onExportHtml}
+            title="현재 미리보기를 SNS콘텐츠프리뷰_YYMMDD.html 단일 파일로 다운로드합니다"
+          >
+            ⬇️ HTML 내보내기
           </Button>
 
           <Button

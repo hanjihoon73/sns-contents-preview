@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
 import { loadSample } from '../utils/sampleLoader';
+import { saveToStorage, loadFromStorage, clearStorage } from '../utils/storage';
 
 const DEFAULT_STATE = {
   profile: {
@@ -18,10 +19,45 @@ const DEFAULT_STATE = {
 };
 
 /**
- * 에디터 핵심 상태 관리 훅
+ * 에디터 핵심 상태 관리 및 IndexedDB 자동 저장 훅
  */
-export default function useEditorState(initialData = null) {
-  const [data, setData] = useState(initialData || DEFAULT_STATE);
+export default function useEditorState() {
+  const [data, setData] = useState(DEFAULT_STATE);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const isFirstMount = useRef(true);
+
+  // 1. 초기 데이터 복원 (IndexedDB 확인 -> 없으면 샘플 로드)
+  const initData = useCallback(async () => {
+    try {
+      const saved = await loadFromStorage();
+      if (saved && (saved.profile || saved.ig || saved.yt)) {
+        setData(saved);
+      } else {
+        const sample = await loadSample();
+        setData(sample);
+      }
+    } catch {
+      const sample = await loadSample();
+      setData(sample);
+    } finally {
+      setIsInitialized(true);
+    }
+  }, []);
+
+  // 2. 데이터 변경 시 500ms 디바운스로 IndexedDB 자동 저장
+  useEffect(() => {
+    if (!isInitialized) return;
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      saveToStorage(data);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [data, isInitialized]);
 
   // 프로필 업데이트
   const updateProfile = useCallback((fields) => {
@@ -90,24 +126,29 @@ export default function useEditorState(initialData = null) {
     }));
   }, []);
 
-  // 전체 초기화
-  const resetAll = useCallback(() => {
-    setData({
+  // 전체 초기화 (IndexedDB도 함께 삭제)
+  const resetAll = useCallback(async () => {
+    const emptyState = {
       profile: { name: '', avatar: null },
       ig: { text: '', images: [] },
       yt: { text: '', images: [] },
-    });
+    };
+    setData(emptyState);
+    await clearStorage();
   }, []);
 
-  // 샘플 데이터 불러오기
+  // 샘플 데이터 강제 불러오기
   const loadSampleData = useCallback(async () => {
     const sample = await loadSample();
     setData(sample);
+    await saveToStorage(sample);
   }, []);
 
   return {
     data,
     setData,
+    isInitialized,
+    initData,
     updateProfile,
     updateText,
     copyIgToYt,
