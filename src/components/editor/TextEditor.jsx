@@ -1,3 +1,4 @@
+import { Copy } from 'lucide-react';
 import { PLATFORM_RULES } from '../../constants/platformRules';
 import { countChars, countHashtags, getLimitStatus } from '../../utils/validators';
 import LimitBadge from '../common/LimitBadge';
@@ -26,7 +27,8 @@ export default function TextEditor({ platform, text, onChange, onCopyFromIg, can
             style={{ height: '28px', fontSize: '11.5px', padding: '0 10px' }}
             title="인스타그램 캡션을 유튜브 본문으로 그대로 복사합니다"
           >
-            📋 인스타 문구 복사
+            <Copy size={13} />
+            <span>인스타 문구 복사</span>
           </Button>
         )}
       </div>

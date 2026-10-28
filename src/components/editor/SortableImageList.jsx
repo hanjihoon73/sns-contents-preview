@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -59,7 +60,7 @@ function SortableItem({ id, img, index, platform, onRemove }) {
           aria-label="이미지 삭제"
           title="삭제"
         >
-          ✕
+          <X size={13} />
         </button>
       </div>
     </div>

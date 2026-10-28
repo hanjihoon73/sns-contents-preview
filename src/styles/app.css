@@ -60,7 +60,7 @@ button {
   display: grid;
   place-items: center;
   color: #fff;
-  box-shadow: 0 6px 16px -6px rgba(124, 92, 255, 0.6);
+  box-shadow: 0 6px 16px -6px rgba(50, 137, 201, 0.5);
   flex-shrink: 0;
 }
 
@@ -121,11 +121,11 @@ button {
   border: 0;
   color: #fff;
   background: var(--accent-gradient);
-  box-shadow: 0 6px 18px -8px rgba(124, 92, 255, 0.8);
+  box-shadow: 0 6px 18px -8px rgba(50, 137, 201, 0.7);
 }
 
 .btn--primary:hover {
-  box-shadow: 0 8px 22px -6px rgba(255, 79, 139, 0.6);
+  box-shadow: 0 8px 22px -6px rgba(78, 164, 227, 0.6);
 }
 
 /* ----- 2분할 메인 레이아웃 ----- */

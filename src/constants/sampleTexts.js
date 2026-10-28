@@ -4,7 +4,7 @@
  */
 export const SAMPLE_PROFILE = {
   name: '깨봉수학',
-  avatar: null,
+  avatar: '/samples/profile.png',
 };
 
 export const SAMPLE_IG_IMAGES = [1, 2, 3, 4, 5].map((n) => `/samples/ig-${n}.png`);
@@ -13,7 +13,7 @@ export const SAMPLE_YT_IMAGES = [1, 2, 3, 4, 5, 6].map((n) => `/samples/yt-${n}.
 export const SAMPLE_IG_TEXT = `우리 아이 수학, 이대로 괜찮을까요?
 
 AI가 수능 수학에서 만점 받는 시대.
-언제까지 공식 외워서 답만 맞추는 연습을 시킬 건가요?
+언제까지 공식 외워서 답만 맞히는 연습을 시킬 건가요?
 
 수능도 '고르는 시험'에서 '풀이를 쓰는 시험'으로 변화가 예고되고 있어요.
 

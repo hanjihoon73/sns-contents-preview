@@ -2,17 +2,34 @@ import { getExportFileName } from './fileName.js';
 import { countChars, countHashtags } from './validators.js';
 
 /**
- * 특수문자 HTML 이스케이프
+ * 특수문자 HTML 이스케이프 (작은따옴표는 본문에서 안전하므로 유지하고 기존 &#39;는 작은따옴표로 복원)
  */
 function escapeHtml(str = '') {
-  return str.replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  }[c]));
+  return String(str)
+    .replace(/&#39;/g, "'")
+    .replace(/[&<>"]/g, (c) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+    }[c]));
 }
+
+/* ----- 루시드 및 플랫폼 고해상도 인라인 SVG 아이콘 ----- */
+const LUCIDE_SUN_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`;
+const LUCIDE_MOON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
+const IG_HEART_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938Z"/></svg>`;
+const IG_COMMENT_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"/></svg>`;
+const IG_SEND_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="3" x2="9.218" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg>`;
+const IG_BOOKMARK_SVG = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="20 21 12 13.44 4 21 4 3 20 3 20 21"/></svg>`;
+const IG_MORE_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>`;
+
+const YT_THUMB_UP_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01ZM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2Z"/></svg>`;
+const YT_THUMB_DOWN_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="transform:rotate(180deg)"><path d="M13.12 2.06 7.58 7.6c-.37.37-.58.88-.58 1.41V19c0 1.1.9 2 2 2h9c.8 0 1.52-.48 1.84-1.21l3.26-7.61C23.94 10.2 22.49 8 20.34 8h-5.65l.95-4.58c.1-.5-.05-1.01-.41-1.37-.59-.58-1.53-.58-2.11.01ZM3 21c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2s-2 .9-2 2v8c0 1.1.9 2 2 2Z"/></svg>`;
+const YT_COMMENT_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2Zm0 14H6l-2 2V4h16v12Z"/></svg>`;
+const YT_SHARE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15 5.63 20.66 12 15 18.37V14h-1c-3.96 0-7.14 1-9.75 3.09 1.84-4.07 5.11-6.4 9.89-7.1l.86-.13V5.63M14 3v6C6.22 10.13 3.11 15.33 2 21c2.78-3.97 6.44-6 12-6v6l8-9-8-9Z"/></svg>`;
+const YT_MORE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>`;
 
 /**
  * 이미지 URL을 Base64 DataURL로 변환 (상대 경로 / 외부 URL 대응)
@@ -227,10 +244,29 @@ export async function generateSingleHtml(data) {
     padding: 3px 9px; border-radius: 999px;
   }
 
+  .theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 14px;
+    background: var(--btn-bg);
+    color: var(--pv-text);
+    border: 1px solid var(--btn-border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .theme-btn:hover { filter: brightness(0.96); }
+  .theme-btn__icon { display: flex; align-items: center; }
+
   /* 인스타 액션 바 */
   .pv-ig-actions { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 8px 14px 0; }
-  .pv-ig-actions__left { display: flex; gap: 14px; font-size: 20px; line-height: 1; }
-  .pv-ig-actions__right { justify-self: end; font-size: 20px; line-height: 1; }
+  .pv-ig-actions__left { display: flex; gap: 14px; align-items: center; }
+  .pv-ig-actions__left span, .pv-ig-actions__right span { display: inline-flex; align-items: center; cursor: pointer; color: var(--pv-text); }
+  .pv-ig-actions__right { justify-self: end; }
   .pv-dots { display: flex; gap: 4px; }
   .pv-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--pv-dot); }
   .pv-dots i.on { background: var(--pv-dot-on); }
@@ -251,8 +287,9 @@ export async function generateSingleHtml(data) {
     display: flex; align-items: center; gap: 20px; padding: 12px 16px 14px;
     font-size: 13px; color: var(--pv-muted);
   }
-  .pv-yt-bar span { display: flex; align-items: center; gap: 6px; }
-  .pv-yt-bar__share { margin-left: auto; }
+  .pv-yt-bar span { display: flex; align-items: center; gap: 6px; color: var(--pv-muted); }
+  .pv-yt-bar span svg { display: block; }
+  .pv-yt-bar__share { margin-left: auto; cursor: pointer; }
 
   .pv-tag { color: var(--pv-ig-link); }
   .pv-yt-text a, .pv-yt-text .pv-tag { color: var(--pv-yt-link); text-decoration: none; }
@@ -271,7 +308,10 @@ export async function generateSingleHtml(data) {
     <h1>${title} · 발행 미리보기</h1>
     <p>계정: ${escapeHtml(name)} · 인스타그램 피드 & 유튜브 커뮤니티</p>
   </div>
-  <button class="theme-btn" id="theme-btn">🌓 모드 전환</button>
+  <button class="theme-btn" id="theme-btn" type="button" aria-label="테마 전환" title="테마 전환">
+    <span class="theme-btn__icon" id="theme-btn-icon"></span>
+    <span id="theme-btn-text">다크 모드</span>
+  </button>
 </header>
 
 <main>
@@ -285,7 +325,7 @@ export async function generateSingleHtml(data) {
       <header class="pv-head">
         ${igAvatarHtml}
         <div class="pv-name">${escapeHtml(name)}</div>
-        <span class="pv-more">⋯</span>
+        <span class="pv-more">${IG_MORE_SVG}</span>
       </header>
 
       <div class="pv-carousel" id="ig-carousel" style="aspect-ratio: 4/5;">
@@ -297,13 +337,13 @@ export async function generateSingleHtml(data) {
 
       <div class="pv-ig-actions">
         <div class="pv-ig-actions__left">
-          <span>♡</span>
-          <span>💬</span>
-          <span>➤</span>
+          <span title="좋아요">${IG_HEART_SVG}</span>
+          <span title="댓글">${IG_COMMENT_SVG}</span>
+          <span title="공유">${IG_SEND_SVG}</span>
         </div>
         <div class="pv-dots" id="ig-dots"></div>
         <div class="pv-ig-actions__right">
-          <span>🔖</span>
+          <span title="저장">${IG_BOOKMARK_SVG}</span>
         </div>
       </div>
 
@@ -326,7 +366,7 @@ export async function generateSingleHtml(data) {
       <header class="pv-head">
         ${ytAvatarHtml}
         <div class="pv-name">${escapeHtml(name)} <span class="pv-sub">· 방금 전</span></div>
-        <span class="pv-more">⋮</span>
+        <span class="pv-more">${YT_MORE_SVG}</span>
       </header>
 
       <p class="pv-yt-text" id="yt-text"></p>
@@ -339,10 +379,10 @@ export async function generateSingleHtml(data) {
       </div>
 
       <div class="pv-yt-bar">
-        <span>👍 0</span>
-        <span>👎 0</span>
-        <span>💬 0</span>
-        <span class="pv-yt-bar__share">↗</span>
+        <span>${YT_THUMB_UP_SVG} 0</span>
+        <span>${YT_THUMB_DOWN_SVG} 0</span>
+        <span>${YT_COMMENT_SVG} 0</span>
+        <span class="pv-yt-bar__share" title="공유">${YT_SHARE_SVG}</span>
       </div>
     </article>
     <p class="pv-meta">
@@ -357,9 +397,11 @@ export async function generateSingleHtml(data) {
 /* 0. 필수 유틸 함수 */
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/[&<>"']/g, function(c) {
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
+  return String(str)
+    .replace(/&#39;/g, "'")
+    .replace(/[&<>"]/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
 }
 
 /* 데이터 주입 */
@@ -501,14 +543,29 @@ initCarousel('yt-carousel', null, DATA.ytImages);
   renderCollapsed();
 })();
 
-/* 4. 다크/라이트 테마 전환 */
+/* 4. 다크/라이트 테마 전환 (루시드 Sun/Moon 아이콘) */
 (function() {
   var root = document.documentElement;
   var btn = document.getElementById('theme-btn');
+  var iconEl = document.getElementById('theme-btn-icon');
+  var textEl = document.getElementById('theme-btn-text');
+
+  var sunSvg = ${JSON.stringify(LUCIDE_SUN_SVG)};
+  var moonSvg = ${JSON.stringify(LUCIDE_MOON_SVG)};
+
+  function updateThemeUI() {
+    var isDark = root.dataset.theme ? root.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (iconEl) iconEl.innerHTML = isDark ? sunSvg : moonSvg;
+    if (textEl) textEl.textContent = isDark ? '라이트 모드' : '다크 모드';
+    if (btn) btn.setAttribute('title', isDark ? '라이트 모드로 전환' : '다크 모드로 전환');
+  }
+
   try {
     var saved = localStorage.getItem('preview-theme');
     if (saved) root.dataset.theme = saved;
   } catch (e) {}
+
+  updateThemeUI();
 
   if (btn) {
     btn.onclick = function() {
@@ -516,6 +573,7 @@ initCarousel('yt-carousel', null, DATA.ytImages);
       var next = isDark ? 'light' : 'dark';
       root.dataset.theme = next;
       try { localStorage.setItem('preview-theme', next); } catch (e) {}
+      updateThemeUI();
     };
   }
 })();

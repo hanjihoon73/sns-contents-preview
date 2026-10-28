@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Scan, Maximize2 } from 'lucide-react';
 import Button from '../common/Button';
 
 const VIEWPORT_SIZE = 240; // 프리뷰 캔버스 지름/크기 (px)
@@ -187,10 +188,12 @@ export default function ProfileCropModal({ isOpen, rawImageSrc, onConfirm, onCan
 
           <div className="crop-presets">
             <Button onClick={handleFitContain} style={{ height: '30px', fontSize: '12px' }}>
-              🔍 로고 전체 맞춤
+              <Scan size={14} style={{ marginRight: '6px' }} />
+              로고 전체 맞춤
             </Button>
             <Button onClick={handleFitCover} style={{ height: '30px', fontSize: '12px' }}>
-              🎯 원형 꽉 채우기
+              <Maximize2 size={14} style={{ marginRight: '6px' }} />
+              원형 꽉 채우기
             </Button>
           </div>
         </div>

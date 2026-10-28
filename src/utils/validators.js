@@ -1,7 +1,7 @@
 /**
  * 글자수·해시태그·이미지 장수 및 비율 검사 도구
  */
-import { getAspectRatioInfo } from './imageUtils';
+import { getAspectRatioInfo } from './imageUtils.js';
 
 /** 글자 수 (이모지도 1자로 계산) */
 export const countChars = (text = '') => [...text].length;

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Upload, Crop, Trash2 } from 'lucide-react';
 import Avatar from '../preview/Avatar';
 import Button from '../common/Button';
 import ProfileCropModal from './ProfileCropModal';
@@ -66,7 +67,8 @@ export default function ProfileForm({ profile, onUpdate }) {
             style={{ display: 'none' }}
           />
           <Button onClick={() => fileInputRef.current?.click()} style={{ height: '32px', fontSize: '12px' }}>
-            {profile.avatar ? '사진 변경' : '프로필 사진 등록'}
+            <Upload size={14} />
+            <span>{profile.avatar ? '사진 변경' : '프로필 사진 등록'}</span>
           </Button>
 
           {profile.avatar && rawImageSrc && (
@@ -75,13 +77,15 @@ export default function ProfileForm({ profile, onUpdate }) {
               style={{ height: '32px', fontSize: '12px' }}
               title="원 안의 위치와 크기를 직접 미세 조절합니다"
             >
-              ✂️ 위치/크기 조절
+              <Crop size={14} />
+              <span>위치/크기 조절</span>
             </Button>
           )}
 
           {profile.avatar && (
             <Button onClick={handleRemoveImage} style={{ height: '32px', fontSize: '12px' }}>
-              삭제
+              <Trash2 size={14} />
+              <span>삭제</span>
             </Button>
           )}
         </div>

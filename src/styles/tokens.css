@@ -9,18 +9,18 @@
 
   /* 앱 화면 */
   --app-bg: #f3f4f8;
-  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(124, 92, 255, 0.10), transparent 60%),
-    radial-gradient(900px 400px at 100% 0%, rgba(255, 79, 139, 0.08), transparent 60%);
+  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(50, 137, 201, 0.12), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(78, 164, 227, 0.08), transparent 60%);
   --surface: #ffffff;
   --surface-2: #f7f8fb;
   --surface-glass: rgba(255, 255, 255, 0.72);
   --border: #e4e6ee;
   --text: #14161f;
   --text-muted: #6b7083;
-  --accent: #7c5cff;
-  --accent-2: #ff4f8b;
-  --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #ff4f8b 100%);
-  --accent-soft: rgba(124, 92, 255, 0.10);
+  --accent: #3289C9;
+  --accent-2: #4EA4E3;
+  --accent-gradient: linear-gradient(135deg, #3289C9 0%, #4EA4E3 100%);
+  --accent-soft: rgba(50, 137, 201, 0.12);
   --ok: #12b76a;
   --warn: #f79009;
   --danger: #f04438;
@@ -47,15 +47,15 @@
 
 :root[data-theme='dark'] {
   --app-bg: #0b0c10;
-  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
-    radial-gradient(900px 400px at 100% 0%, rgba(255, 79, 139, 0.12), transparent 60%);
+  --app-bg-glow: radial-gradient(1200px 500px at 10% -10%, rgba(50, 137, 201, 0.20), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(78, 164, 227, 0.12), transparent 60%);
   --surface: #15171d;
   --surface-2: #1b1e25;
   --surface-glass: rgba(21, 23, 29, 0.72);
   --border: #2a2d36;
   --text: #eceef3;
   --text-muted: #9aa0ae;
-  --accent-soft: rgba(124, 92, 255, 0.18);
+  --accent-soft: rgba(50, 137, 201, 0.20);
   --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.7);
 

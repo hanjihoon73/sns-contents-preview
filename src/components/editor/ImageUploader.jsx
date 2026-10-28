@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { ImagePlus } from 'lucide-react';
 import { readFileAsImageData } from '../../utils/imageUtils';
 import Button from '../common/Button';
 
@@ -76,7 +77,9 @@ export default function ImageUploader({ onAddImages, maxCount, currentCount }) {
         multiple
         style={{ display: 'none' }}
       />
-      <div className="image-uploader__icon">🖼️</div>
+      <div className="image-uploader__icon">
+        <ImagePlus size={32} style={{ color: 'var(--accent)' }} />
+      </div>
       <div className="image-uploader__text">
         <strong>클릭</strong>하여 이미지를 추가하거나 <strong>여기로 드래그</strong>하세요
       </div>
