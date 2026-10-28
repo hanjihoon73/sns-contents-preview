@@ -21,7 +21,12 @@ export default function Carousel({ images, carousel, aspect, emptyLabel }) {
     <div className="pv-carousel" style={{ aspectRatio: ratio }} {...touchHandlers}>
       <div className="pv-track" style={{ transform: `translateX(-${index * 100}%)` }}>
         {images.map((img, i) => (
-          <img key={img.id} src={img.src} alt={`${i + 1}번째 이미지`} draggable={false} />
+          <img
+            key={img.id}
+            src={img.thumbnail || img.src}
+            alt={`${i + 1}번째 이미지`}
+            draggable={false}
+          />
         ))}
       </div>
 

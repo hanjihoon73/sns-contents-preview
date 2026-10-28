@@ -37,7 +37,11 @@ function SortableItem({ id, img, index, platform, onRemove }) {
   return (
     <div ref={setNodeRef} style={style} className="sortable-item">
       <div className="sortable-item__thumb-wrap" {...attributes} {...listeners}>
-        <img src={img.src} alt={img.name || `${index + 1}번째 이미지`} className="sortable-item__img" />
+        <img
+          src={img.thumbnail || img.src}
+          alt={img.name || `${index + 1}번째 미디어`}
+          className="sortable-item__img"
+        />
         <span className="sortable-item__badge">{index + 1}</span>
       </div>
 

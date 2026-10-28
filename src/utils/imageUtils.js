@@ -6,7 +6,7 @@ export const createId = () =>
     ? crypto.randomUUID()
     : `img-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
-/** 이미지 주소(src) → { id, src, name, width, height } */
+/** 이미지 주소(src) → { id, src, type, name, width, height, duration, thumbnail } */
 export function loadImageFromUrl(src, name = '') {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -14,16 +14,19 @@ export function loadImageFromUrl(src, name = '') {
       resolve({
         id: createId(),
         src,
+        type: 'image',
         name: name || src.split('/').pop(),
         width: img.naturalWidth,
         height: img.naturalHeight,
+        duration: 0,
+        thumbnail: src,
       });
     img.onerror = () => reject(new Error(`이미지를 불러오지 못했어요: ${name || src}`));
     img.src = src;
   });
 }
 
-/** File 객체 → Data URL & 크기 정보 객체 */
+/** File 객체 → Data URL & 크기 정보 객체 (표준 미디어 포맷) */
 export function readFileAsImageData(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -34,9 +37,12 @@ export function readFileAsImageData(file) {
         resolve({
           id: createId(),
           src,
+          type: 'image',
           name: file.name,
           width: img.naturalWidth,
           height: img.naturalHeight,
+          duration: 0,
+          thumbnail: src,
           size: file.size,
         });
       };

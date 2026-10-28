@@ -66,14 +66,15 @@ export default function EditorPanel({
           />
         </div>
 
-        {/* 4. 이미지 업로드 & 리스트 */}
+        {/* 4. 미디어 업로드 & 리스트 */}
         <div className="editor-block">
           <div className="editor-block__header">
             <span className="form-label">
-              이미지 ({activeRules.ratios.join(', ')} 권장)
+              {activeRules.allowVideo ? '미디어 (이미지·MP4 / ' : '이미지 ('}
+              {activeRules.ratios.join(', ')} 권장)
             </span>
             <LimitBadge
-              label="등록 장수"
+              label="등록 개수"
               current={imageCount}
               max={activeRules.maxImages}
               status={imageStatus}
@@ -84,6 +85,8 @@ export default function EditorPanel({
             onAddImages={(newImages) => addImages(activeTab, newImages)}
             maxCount={activeRules.maxImages}
             currentCount={imageCount}
+            allowVideo={activeRules.allowVideo}
+            maxVideoSizeMB={activeRules.maxVideoSizeMB}
           />
 
           <SortableImageList

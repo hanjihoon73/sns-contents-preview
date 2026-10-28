@@ -1,31 +1,59 @@
 import { useRef, useState } from 'react';
 import { ImagePlus } from 'lucide-react';
 import { readFileAsImageData } from '../../utils/imageUtils';
-import Button from '../common/Button';
+import { isVideoFile, readFileAsVideoData } from '../../utils/videoUtils';
+import { validateVideoFile } from '../../utils/validators';
 
 /**
- * 이미지 업로드 컴포넌트 (클릭 또는 파일 드래그 앤 드롭)
+ * 미디어(이미지·동영상) 업로드 컴포넌트 (클릭 또는 파일 드래그 앤 드롭)
  */
-export default function ImageUploader({ onAddImages, maxCount, currentCount }) {
+export default function ImageUploader({
+  onAddImages,
+  maxCount,
+  currentCount,
+  allowVideo = true,
+  maxVideoSizeMB = 50,
+}) {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const processFiles = async (fileList) => {
     if (!fileList || fileList.length === 0) return;
-    const imageFiles = Array.from(fileList).filter((f) => f.type.startsWith('image/'));
-    if (imageFiles.length === 0) {
-      alert('이미지 파일(PNG, JPG, WebP 등)만 업로드할 수 있습니다.');
+
+    const allFiles = Array.from(fileList);
+    const validFiles = [];
+
+    for (const file of allFiles) {
+      const isImg = file.type && file.type.startsWith('image/');
+      const isVid = isVideoFile(file);
+
+      if (!isImg && !isVid) continue;
+
+      if (isVid) {
+        const sizeCheck = validateVideoFile(file, maxVideoSizeMB);
+        if (!sizeCheck.valid) {
+          alert(sizeCheck.message);
+          continue;
+        }
+      }
+      validFiles.push({ file, isVid });
+    }
+
+    if (validFiles.length === 0) {
+      alert('이미지(PNG, JPG, WebP) 또는 동영상(MP4, MOV) 파일만 업로드할 수 있습니다.');
       return;
     }
 
     setIsLoading(true);
     try {
-      const readPromises = imageFiles.map((file) => readFileAsImageData(file));
-      const loadedImages = await Promise.all(readPromises);
-      onAddImages(loadedImages);
+      const readPromises = validFiles.map(({ file, isVid }) =>
+        isVid ? readFileAsVideoData(file) : readFileAsImageData(file)
+      );
+      const loadedMedia = await Promise.all(readPromises);
+      onAddImages(loadedMedia);
     } catch (err) {
-      alert(err.message || '이미지를 불러오는 중 오류가 발생했습니다.');
+      alert(err.message || '미디어를 불러오는 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +101,7 @@ export default function ImageUploader({ onAddImages, maxCount, currentCount }) {
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept="image/*"
+        accept="image/*,video/mp4,video/quicktime"
         multiple
         style={{ display: 'none' }}
       />
@@ -81,10 +109,13 @@ export default function ImageUploader({ onAddImages, maxCount, currentCount }) {
         <ImagePlus size={32} style={{ color: 'var(--accent)' }} />
       </div>
       <div className="image-uploader__text">
-        <strong>클릭</strong>하여 이미지를 추가하거나 <strong>여기로 드래그</strong>하세요
+        <strong>클릭</strong>하여 {allowVideo ? '이미지·동영상(MP4)을' : '이미지를'} 추가하거나{' '}
+        <strong>여기로 드래그</strong>하세요
       </div>
       <div className="image-uploader__sub">
-        {isLoading ? '이미지 처리 중...' : `여러 장 동시 선택 가능 (남은 한도: ${remaining}장)`}
+        {isLoading
+          ? '미디어 및 썸네일 처리 중...'
+          : `여러 개 동시 선택 가능 · 동영상 개당 ${maxVideoSizeMB}MB 이하 권장 (남은 한도: ${remaining}개)`}
       </div>
     </div>
   );

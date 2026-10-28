@@ -51,3 +51,16 @@ export function checkImageRatio(platform, width, height) {
 
   return { valid: true, isRecommended: true, message: '', info };
 }
+
+/** 비디오 파일 용량 검증 (기본 50MB 제한) */
+export function validateVideoFile(file, maxSizeMB = 50) {
+  const maxBytes = maxSizeMB * 1024 * 1024;
+  if (file.size > maxBytes) {
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    return {
+      valid: false,
+      message: `'${file.name}' 파일(${fileSizeMB}MB)이 권장 용량(${maxSizeMB}MB)을 초과했습니다.`,
+    };
+  }
+  return { valid: true, message: '' };
+}
