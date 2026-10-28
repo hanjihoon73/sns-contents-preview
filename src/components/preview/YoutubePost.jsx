@@ -7,9 +7,10 @@ import { IconMoreVertical, IconShare, IconThumbUp, IconYtComment } from '../comm
 
 const RULES = PLATFORM_RULES.yt;
 
-/** 유튜브 커뮤니티 게시물 카드 (본문은 실제 앱처럼 접힌 상태로 시작) */
+/** 유튜브 커뮤니티 게시물 카드 (본문은 실제 앱처럼 접힌 상태로 시작, 이미지 전용) */
 export default function YoutubePost({ profile, post }) {
-  const carousel = useCarousel(post.images.length);
+  const imageOnlyList = post.images.filter((item) => item.type !== 'video');
+  const carousel = useCarousel(imageOnlyList.length);
   const name = profile.name || '채널 이름';
 
   return (
@@ -39,7 +40,7 @@ export default function YoutubePost({ profile, post }) {
       )}
 
       <Carousel
-        images={post.images}
+        images={imageOnlyList}
         carousel={carousel}
         aspect={RULES.defaultAspect}
         emptyLabel="유튜브 이미지를 추가해주세요"

@@ -15,6 +15,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { checkImageRatio } from '../../utils/validators';
+import { formatDuration } from '../../utils/videoUtils';
+import { IconPlay } from '../common/Icons';
 
 function SortableItem({ id, img, index, platform, onRemove }) {
   const {
@@ -32,6 +34,7 @@ function SortableItem({ id, img, index, platform, onRemove }) {
     opacity: isDragging ? 0.4 : 1,
   };
 
+  const isVideo = img.type === 'video';
   const ratioCheck = checkImageRatio(platform, img.width, img.height);
 
   return (
@@ -43,6 +46,13 @@ function SortableItem({ id, img, index, platform, onRemove }) {
           className="sortable-item__img"
         />
         <span className="sortable-item__badge">{index + 1}</span>
+
+        {isVideo && (
+          <span className="sortable-item__video-badge" title="동영상 재생 시간">
+            <IconPlay size={10} />
+            <span>{formatDuration(img.duration)}</span>
+          </span>
+        )}
       </div>
 
       <div className="sortable-item__meta">
@@ -61,7 +71,7 @@ function SortableItem({ id, img, index, platform, onRemove }) {
             e.stopPropagation();
             onRemove(img.id);
           }}
-          aria-label="이미지 삭제"
+          aria-label="미디어 삭제"
           title="삭제"
         >
           <X size={13} />

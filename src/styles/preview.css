@@ -332,6 +332,18 @@
   border-radius: 10px;
 }
 
+.pv-yt-notice {
+  margin: 0 16px 10px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: rgba(247, 144, 9, 0.12);
+  border: 1px solid rgba(247, 144, 9, 0.35);
+  color: var(--warn);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .pv-yt-bar {
   display: flex;
   align-items: center;
